@@ -52,11 +52,13 @@ uint16_t g_lux = 0;
 #endif //CONFIG_SOFTWARE_SENSOR_USE_SENSOR
 
 RTC_DATA_ATTR static uint32_t boot_count = 0;
-static void obtain_time(void);
+//static void obtain_time(void);
 
+#if CONFIG_SOFTWARE_EXTERNAL_I2C_SUPPORT
 i2c_master_bus_handle_t i2c0_master_bus_handle;
+#endif //CONFIG_SOFTWARE_EXTERNAL_I2C_SUPPORT
 
-
+/*
 void time_sync_notification_cb(struct timeval *tv)
 {
     ESP_LOGI(TAG, "Notification of a time synchronization event");
@@ -94,6 +96,10 @@ static void obtain_time(void)
 
 void sntp_main()
 {
+    // Set timezone to Japan Standard Time and print local time
+    setenv("TZ", "JST-9", 1);
+    tzset();
+
     time_t now;
     struct tm timeinfo;
     time(&now);
@@ -108,13 +114,11 @@ void sntp_main()
 
     char strftime_buf[64];
 
-    // Set timezone to Japan Standard Time and print local time
-    setenv("TZ", "JST-9", 1);
-    tzset();
     localtime_r(&now, &timeinfo);
     strftime(strftime_buf, sizeof(strftime_buf), "%c", &timeinfo);
     ESP_LOGI(TAG, "The current date/time in Japan is: %s", strftime_buf);
 }
+*/
 
 void sensor_mode()
 {
@@ -242,6 +246,7 @@ void sensor_viewer()
 void sensor_main()
 {
     esp_err_t ret = ESP_OK;
+#if CONFIG_SOFTWARE_EXTERNAL_I2C_SUPPORT
     i2c_master_bus_config_t i2c_mst_config_0 = {
         .clk_source = I2C_CLK_SRC_DEFAULT,
         .i2c_port = I2C0_MASTER_PORT,
@@ -260,6 +265,7 @@ void sensor_main()
     {
         ESP_LOGE(TAG, "I2C i2c_new_master_bus error");
     }
+#endif //CONFIG_SOFTWARE_EXTERNAL_I2C_SUPPORT
 
 #if CONFIG_SOFTWARE_SENSOR_BMP280
     bool _isSensorBmp280 = false;
@@ -273,7 +279,7 @@ void sensor_main()
         ESP_LOGE(TAG, "Bmp280_Init Error");
         g_sensor_mode -= 4;
     }
-#endif
+#endif // CONFIG_SOFTWARE_SENSOR_BMP280
 
 #if CONFIG_SOFTWARE_SENSOR_SHT4X
     bool _isSensorSht4x = false;
@@ -287,13 +293,27 @@ void sensor_main()
         ESP_LOGE(TAG, "Sht4x_Init Error");
         g_sensor_mode -= 3;
     }
-#endif
+#endif // CONFIG_SOFTWARE_SENSOR_SHT4X
+
+#if CONFIG_SOFTWARE_SENSOR_SHT3X
+    bool _isSensorSht3x = false;
+    ret = Sht3x_Init(i2c0_master_bus_handle);
+    if (ret == ESP_OK) {
+        ESP_LOGD(TAG, "Sht3x_Init() is OK!");
+        _isSensorSht3x = true;
+    }
+    else
+    {
+        ESP_LOGE(TAG, "Sht3x_Init Error");
+        g_sensor_mode -= 3;
+    }
+#endif // CONFIG_SOFTWARE_SENSOR_SHT3X
 
 #if CONFIG_SOFTWARE_SENSOR_BMP280
         if (_isSensorBmp280) {
             g_pressure = Bmp280_getPressure() / 100.0;
         }
-#endif
+#endif // CONFIG_SOFTWARE_SENSOR_BMP280
 
 #if CONFIG_SOFTWARE_SENSOR_SHT4X
         if (_isSensorSht4x) {
@@ -304,7 +324,19 @@ void sensor_main()
                 g_humidity = Sht4x_GetHumidity();
             }
         }
-#endif
+#endif // CONFIG_SOFTWARE_SENSOR_SHT4X
+
+#if CONFIG_SOFTWARE_SENSOR_SHT3X
+        if (_isSensorSht3x) {
+            ret = Sht3x_Read();
+            if (ret == ESP_OK) {
+                vTaskDelay( pdMS_TO_TICKS(100) );
+                g_temperature = Sht3x_GetTemperature();
+                g_humidity = Sht3x_GetHumidity();
+            }
+        }
+#endif // CONFIG_SOFTWARE_SENSOR_SHT3X
+
 }
 
 esp_mqtt_client_handle_t mqttClient;
@@ -382,13 +414,10 @@ static void mqtt_app_stop(void)
 void mqtt_main()
 {
     // connected wifi
-    while (1) {
-        if (wifi_isConnected() == ESP_OK) {
-            mqtt_app_start();
-            break;
-        }
-        vTaskDelay( pdMS_TO_TICKS(10000) );
+    if (wifi_isConnected() != ESP_OK) {
+        return;
     }
+    mqtt_app_start();
 
     int msg_id;
     char pubMessage[128] = {0};
@@ -510,7 +539,7 @@ void app_main(void)
 #if CONFIG_SOFTWARE_INTERNAL_WIFI_SUPPORT
     wifi_initialise();
 
-    sntp_main();
+//    sntp_main();
 #endif //CONFIG_SOFTWARE_INTERNAL_WIFI_SUPPORT
 
 #if CONFIG_SOFTWARE_SENSOR_USE_SENSOR
