@@ -52,73 +52,11 @@ uint16_t g_lux = 0;
 #endif //CONFIG_SOFTWARE_SENSOR_USE_SENSOR
 
 RTC_DATA_ATTR static uint32_t boot_count = 0;
-//static void obtain_time(void);
 
 #if CONFIG_SOFTWARE_EXTERNAL_I2C_SUPPORT
 i2c_master_bus_handle_t i2c0_master_bus_handle;
 #endif //CONFIG_SOFTWARE_EXTERNAL_I2C_SUPPORT
 
-/*
-void time_sync_notification_cb(struct timeval *tv)
-{
-    ESP_LOGI(TAG, "Notification of a time synchronization event");
-}
-
-static void obtain_time(void)
-{
-    ESP_ERROR_CHECK( nvs_flash_init() );
-    ESP_ERROR_CHECK( esp_netif_init() );
-
-    while ( wifi_isConnected() != ESP_OK )
-    {
-        vTaskDelay( pdMS_TO_TICKS(5000) );
-    }
-
-    ESP_LOGI(TAG, "Initializing and starting SNTP");
-
-    esp_sntp_config_t config = ESP_NETIF_SNTP_DEFAULT_CONFIG(CONFIG_NTP_SERVER_NAME);
-    config.sync_cb = time_sync_notification_cb;     // Note: This is only needed if we want
-    esp_netif_sntp_init(&config);
-
-    // wait for time to be set
-    time_t now = 0;
-    struct tm timeinfo = { 0 };
-    int retry = 0;
-    const int retry_count = 3;
-    while (esp_netif_sntp_sync_wait(2000 / portTICK_PERIOD_MS) == ESP_ERR_TIMEOUT && ++retry < retry_count) {
-        ESP_LOGI(TAG, "Waiting for system time to be set... (%d/%d)", retry, retry_count);
-    }
-    time(&now);
-    localtime_r(&now, &timeinfo);
-
-    esp_netif_sntp_deinit();
-}
-
-void sntp_main()
-{
-    // Set timezone to Japan Standard Time and print local time
-    setenv("TZ", "JST-9", 1);
-    tzset();
-
-    time_t now;
-    struct tm timeinfo;
-    time(&now);
-    localtime_r(&now, &timeinfo);
-    // Is time set? If not, tm_year will be (1970 - 1900).
-    if (timeinfo.tm_year < (2016 - 1900)) {
-        ESP_LOGI(TAG, "Time is not set yet. Connecting to WiFi and getting time over NTP.");
-        obtain_time();
-        // update 'now' variable with current time
-        time(&now);
-    }
-
-    char strftime_buf[64];
-
-    localtime_r(&now, &timeinfo);
-    strftime(strftime_buf, sizeof(strftime_buf), "%c", &timeinfo);
-    ESP_LOGI(TAG, "The current date/time in Japan is: %s", strftime_buf);
-}
-*/
 
 void sensor_mode()
 {
@@ -146,97 +84,97 @@ void sensor_viewer()
     switch (g_sensor_mode)
     {
     case 1:
-        ESP_LOGI(TAG, "SENSOR temperature:%f", g_temperature);
+        ESP_LOGI(TAG, "SENSOR temperature:%4.1f", g_temperature);
         break;
     case 2:
-        ESP_LOGI(TAG, "SENSOR humidity:%f", g_humidity);
+        ESP_LOGI(TAG, "SENSOR humidity:%4.1f", g_humidity);
         break;
     case 3:
-        ESP_LOGI(TAG, "SENSOR temperature:%f humidity:%f", g_temperature, g_humidity);
+        ESP_LOGI(TAG, "SENSOR temperature:%4.1f humidity:%4.1f", g_temperature, g_humidity);
         break;
     case 4:
-        ESP_LOGI(TAG, "SENSOR pressure:%f", g_pressure);
+        ESP_LOGI(TAG, "SENSOR pressure:%4.1f", g_pressure);
         break;
     case 5:
-        ESP_LOGI(TAG, "SENSOR temperature:%f pressure:%f", g_temperature, g_pressure);
+        ESP_LOGI(TAG, "SENSOR temperature:%4.1f pressure:%4.1f", g_temperature, g_pressure);
         break;
     case 6:
-        ESP_LOGI(TAG, "SENSOR humidity:%f pressure:%f", g_humidity, g_pressure);
+        ESP_LOGI(TAG, "SENSOR humidity:%4.1f pressure:%4.1f", g_humidity, g_pressure);
         break;
     case 7:
-        ESP_LOGI(TAG, "SENSOR temperature:%f humidity:%f pressure:%f", g_temperature, g_humidity, g_pressure);
+        ESP_LOGI(TAG, "SENSOR temperature:%4.1f humidity:%4.1f pressure:%4.1f", g_temperature, g_humidity, g_pressure);
         break;
     case 8:
-        ESP_LOGI(TAG, "SENSOR CO2:%d", g_co2);
+        ESP_LOGI(TAG, "SENSOR co2:%4d", g_co2);
         break;
     case 9:
-        ESP_LOGI(TAG, "SENSOR temperature:%f CO2:%d", g_temperature, g_co2);
+        ESP_LOGI(TAG, "SENSOR temperature:%4.1f co2:%4d", g_temperature, g_co2);
         break;
     case 10:
-        ESP_LOGI(TAG, "SENSOR humidity:%f CO2:%d", g_humidity, g_co2);
+        ESP_LOGI(TAG, "SENSOR humidity:%4.1f co2:%4d", g_humidity, g_co2);
         break;
     case 11:
-        ESP_LOGI(TAG, "SENSOR temperature:%f humidity:%f CO2:%d", g_temperature, g_humidity, g_co2);
+        ESP_LOGI(TAG, "SENSOR temperature:%4.1f humidity:%4.1f co2:%4d", g_temperature, g_humidity, g_co2);
         break;
     case 12:
-        ESP_LOGI(TAG, "SENSOR pressure:%f CO2:%d", g_pressure, g_co2);
+        ESP_LOGI(TAG, "SENSOR pressure:%4.1f co2:%4d", g_pressure, g_co2);
         break;
     case 13:
-        ESP_LOGI(TAG, "SENSOR temperature:%f pressure:%f CO2:%d", g_temperature, g_pressure, g_co2);
+        ESP_LOGI(TAG, "SENSOR temperature:%4.1f pressure:%4.1f co2:%4d", g_temperature, g_pressure, g_co2);
         break;
     case 14:
-        ESP_LOGI(TAG, "SENSOR humidity:%f pressure:%f CO2:%d", g_humidity, g_pressure, g_co2);
+        ESP_LOGI(TAG, "SENSOR humidity:%4.1f pressure:%4.1f co2:%4d", g_humidity, g_pressure, g_co2);
         break;
     case 15:
-        ESP_LOGI(TAG, "SENSOR temperature:%f humidity:%f pressure:%f CO2:%d", g_temperature, g_humidity, g_pressure, g_co2);
+        ESP_LOGI(TAG, "SENSOR temperature:%4.1f humidity:%4.1f pressure:%4.1f co2:%4d", g_temperature, g_humidity, g_pressure, g_co2);
         break;
     case 16:
         ESP_LOGI(TAG, "SENSOR lux:%u", g_lux);
         break;
     case 17:
-        ESP_LOGI(TAG, "SENSOR temperature:%f lux:%u", g_temperature, g_lux);
+        ESP_LOGI(TAG, "SENSOR temperature:%4.1f lux:%u", g_temperature, g_lux);
         break;
     case 18:
-        ESP_LOGI(TAG, "SENSOR humidity:%f lux:%u", g_humidity, g_lux);
+        ESP_LOGI(TAG, "SENSOR humidity:%4.1f lux:%u", g_humidity, g_lux);
         break;
     case 19:
-        ESP_LOGI(TAG, "SENSOR temperature:%f humidity:%f lux:%u", g_temperature, g_humidity, g_lux);
+        ESP_LOGI(TAG, "SENSOR temperature:%4.1f humidity:%4.1f lux:%u", g_temperature, g_humidity, g_lux);
         break;
     case 20:
-        ESP_LOGI(TAG, "SENSOR pressure:%f lux:%u", g_pressure, g_lux);
+        ESP_LOGI(TAG, "SENSOR pressure:%4.1f lux:%u", g_pressure, g_lux);
         break;
     case 21:
-        ESP_LOGI(TAG, "SENSOR temperature:%f pressure:%f lux:%u", g_temperature, g_pressure, g_lux);
+        ESP_LOGI(TAG, "SENSOR temperature:%4.1f pressure:%4.1f lux:%u", g_temperature, g_pressure, g_lux);
         break;
     case 22:
-        ESP_LOGI(TAG, "SENSOR humidity:%f pressure:%f lux:%u", g_humidity, g_pressure, g_lux);
+        ESP_LOGI(TAG, "SENSOR humidity:%4.1f pressure:%4.1f lux:%u", g_humidity, g_pressure, g_lux);
         break;
     case 23:
-        ESP_LOGI(TAG, "SENSOR temperature:%f humidity:%f pressure:%f lux:%u", g_temperature, g_humidity, g_pressure, g_lux);
+        ESP_LOGI(TAG, "SENSOR temperature:%4.1f humidity:%4.1f pressure:%4.1f lux:%u", g_temperature, g_humidity, g_pressure, g_lux);
         break;
     case 24:
-        ESP_LOGI(TAG, "SENSOR CO2:%d lux:%u", g_co2, g_lux);
+        ESP_LOGI(TAG, "SENSOR co2:%4d lux:%u", g_co2, g_lux);
         break;
     case 25:
-        ESP_LOGI(TAG, "SENSOR temperature:%f CO2:%d lux:%u", g_temperature, g_co2, g_lux);
+        ESP_LOGI(TAG, "SENSOR temperature:%4.1f co2:%4d lux:%u", g_temperature, g_co2, g_lux);
         break;
     case 26:
-        ESP_LOGI(TAG, "SENSOR humidity:%f CO2:%d lux:%u", g_humidity, g_co2, g_lux);
+        ESP_LOGI(TAG, "SENSOR humidity:%4.1f co2:%4d lux:%u", g_humidity, g_co2, g_lux);
         break;
     case 27:
-        ESP_LOGI(TAG, "SENSOR temperature:%f humidity:%f CO2:%d lux:%u", g_temperature, g_humidity, g_co2, g_lux);
+        ESP_LOGI(TAG, "SENSOR temperature:%4.1f humidity:%4.1f co2:%4d lux:%u", g_temperature, g_humidity, g_co2, g_lux);
         break;
     case 28:
-        ESP_LOGI(TAG, "SENSOR pressure:%f CO2:%d lux:%u", g_pressure, g_co2, g_lux);
+        ESP_LOGI(TAG, "SENSOR pressure:%4.1f co2:%4d lux:%u", g_pressure, g_co2, g_lux);
         break;
     case 29:
-        ESP_LOGI(TAG, "SENSOR temperature:%f pressure:%f CO2:%d lux:%u", g_temperature, g_pressure, g_co2, g_lux);
+        ESP_LOGI(TAG, "SENSOR temperature:%4.1f pressure:%4.1f co2:%4d lux:%u", g_temperature, g_pressure, g_co2, g_lux);
         break;
     case 30:
-        ESP_LOGI(TAG, "SENSOR humidity:%f pressure:%f CO2:%d lux:%u", g_humidity, g_pressure, g_co2, g_lux);
+        ESP_LOGI(TAG, "SENSOR humidity:%4.1f pressure:%4.1f co2:%4d lux:%u", g_humidity, g_pressure, g_co2, g_lux);
         break;
     case 31:
-        ESP_LOGI(TAG, "SENSOR temperature:%f humidity:%f pressure:%f CO2:%d lux:%u", g_temperature, g_humidity, g_pressure, g_co2, g_lux);
+        ESP_LOGI(TAG, "SENSOR temperature:%4.1f humidity:%4.1f pressure:%4.1f co2:%4d lux:%u", g_temperature, g_humidity, g_pressure, g_co2, g_lux);
         break;
     default:
         break;
@@ -309,6 +247,48 @@ void sensor_main()
     }
 #endif // CONFIG_SOFTWARE_SENSOR_SHT3X
 
+#if CONFIG_SOFTWARE_SENSOR_SCD30
+    bool _isSensorScd30 = false;
+    ret = Scd30_Init(i2c0_master_bus_handle);
+    if (ret == ESP_OK) {
+        ESP_LOGD(TAG, "Scd30_Init() is OK!");
+        _isSensorScd30 = true;
+
+        ret = Scd30_SetAutoSelfCalibration(false);
+        if (ret != ESP_OK) {
+            ESP_LOGE(TAG, "Scd30_SetAutoSelfCalibration() is Error");
+        }
+        ret = Scd30_SetTemperatureOffset(220); // 2.2*100
+        if (ret != ESP_OK) {
+            ESP_LOGE(TAG, "Scd30_SetTemperatureOffset() is Error");
+        }
+    }
+    else
+    {
+        ESP_LOGE(TAG, "Scd30_Init Error");
+        g_sensor_mode -= 11;
+    }
+#endif // CONFIG_SOFTWARE_SENSOR_SCD30
+
+#if CONFIG_SOFTWARE_SENSOR_BH1750
+    bool _isSensorBh1750 = false;
+    ret = BH1750_Init(i2c0_master_bus_handle);
+    if (ret == ESP_OK) {
+        ESP_LOGD(TAG, "BH1750_Init() is OK!");
+        _isSensorBh1750 = true;
+
+        ret = BH1750_SetMode(BH1750_CONTINUOUSLY_H_RESOLUTION_MODE);
+        if (ret != ESP_OK) {
+            ESP_LOGE(TAG, "BH1750_SetMode Error");
+        }
+    }
+    else
+    {
+        ESP_LOGE(TAG, "BH1750_Init Error");
+        g_sensor_mode -= 16;
+    }
+#endif // CONFIG_SOFTWARE_SENSOR_BH1750
+
 #if CONFIG_SOFTWARE_SENSOR_BMP280
         if (_isSensorBmp280) {
             g_pressure = Bmp280_getPressure() / 100.0;
@@ -337,8 +317,36 @@ void sensor_main()
         }
 #endif // CONFIG_SOFTWARE_SENSOR_SHT3X
 
+#if CONFIG_SOFTWARE_SENSOR_SCD30
+        if (_isSensorScd30) {
+            float scd30_tmp[3] = { 0.0 };
+            if (Scd30_IsDataAvailable() != false)
+            {
+                ret = Scd30_ReadMeasurement(scd30_tmp);
+                if (ret == ESP_OK) {
+                    g_co2 = scd30_tmp[0];
+                    g_temperature = scd30_tmp[1];
+                    g_humidity = scd30_tmp[2];
+                }
+            }
+        }
+#endif // CONFIG_SOFTWARE_SENSOR_SCD30
+
+#if CONFIG_SOFTWARE_SENSOR_BH1750
+        if (_isSensorBh1750) {
+            uint16_t tmp_lux = 0;
+            tmp_lux = 0;
+            tmp_lux = BH1750_GetLUX();
+            if (tmp_lux != 0)
+            {
+                g_lux = tmp_lux;
+            }
+        }
+#endif // CONFIG_SOFTWARE_SENSOR_BH1750
+
 }
 
+#if CONFIG_SOFTWARE_ESP_MQTT_SUPPORT
 esp_mqtt_client_handle_t mqttClient;
 static void log_error_if_nonzero(const char *message, int error_code)
 {
@@ -473,49 +481,49 @@ void mqtt_main()
         sprintf(pubMessage, "{\"lux\":%u}", g_lux);
         break;
     case 17:
-        sprintf(pubMessage, "{\"temperature\":%f,\"lux\":%u}", g_temperature, g_lux);
+        sprintf(pubMessage, "{\"temperature\":%4.1f,\"lux\":%u}", g_temperature, g_lux);
         break;
     case 18:
-        sprintf(pubMessage, "{\"humidity\":%f,\"lux\":%u}", g_humidity, g_lux);
+        sprintf(pubMessage, "{\"humidity\":%4.1f,\"lux\":%u}", g_humidity, g_lux);
         break;
     case 19:
-        sprintf(pubMessage, "{\"temperature\":%f,\"humidity\":%f,\"lux\":%u}", g_temperature, g_humidity, g_lux);
+        sprintf(pubMessage, "{\"temperature\":%4.1f,\"humidity\":%4.1f,\"lux\":%u}", g_temperature, g_humidity, g_lux);
         break;
     case 20:
-        sprintf(pubMessage, "{\"pressure\":%f,\"lux\":%u}", g_pressure, g_lux);
+        sprintf(pubMessage, "{\"pressure\":%4.1f,\"lux\":%u}", g_pressure, g_lux);
         break;
     case 21:
-        sprintf(pubMessage, "{\"temperature\":%f,\"pressure\":%f,\"lux\":%u}", g_temperature, g_pressure, g_lux);
+        sprintf(pubMessage, "{\"temperature\":%4.1f,\"pressure\":%4.1f,\"lux\":%u}", g_temperature, g_pressure, g_lux);
         break;
     case 22:
-        sprintf(pubMessage, "{\"humidity\":%f,\"pressure\":%f,\"lux\":%u}", g_humidity, g_pressure, g_lux);
+        sprintf(pubMessage, "{\"humidity\":%4.1f,\"pressure\":%4.1f,\"lux\":%u}", g_humidity, g_pressure, g_lux);
         break;
     case 23:
-        sprintf(pubMessage, "{\"temperature\":%f,\"humidity\":%f,\"pressure\":%f,\"lux\":%u}", g_temperature, g_humidity, g_pressure, g_lux);
+        sprintf(pubMessage, "{\"temperature\":%4.1f,\"humidity\":%4.1f,\"pressure\":%4.1f,\"lux\":%u}", g_temperature, g_humidity, g_pressure, g_lux);
         break;
     case 24:
-        sprintf(pubMessage, "{\"CO2:%d,\"lux\":%u}", g_co2, g_lux);
+        sprintf(pubMessage, "{\"co2\":%4d,\"lux\":%u}", g_co2, g_lux);
         break;
     case 25:
-        sprintf(pubMessage, "{\"temperature\":%f,\"CO2\":%d,\"lux\":%u}", g_temperature, g_co2, g_lux);
+        sprintf(pubMessage, "{\"temperature\":%4.1f,\"co2\":%4d,\"lux\":%u}", g_temperature, g_co2, g_lux);
         break;
     case 26:
-        sprintf(pubMessage, "{\"humidity\":%f,\"CO2\":%d,\"lux\":%u}", g_humidity, g_co2, g_lux);
+        sprintf(pubMessage, "{\"humidity\":%4.1f,\"co2\":%4d,\"lux\":%u}", g_humidity, g_co2, g_lux);
         break;
     case 27:
-        sprintf(pubMessage, "{\"temperature\":%f,\"humidity\":%f,\"CO2\":%d,\"lux\":%u}", g_temperature, g_humidity, g_co2, g_lux);
+        sprintf(pubMessage, "{\"temperature\":%4.1f,\"humidity\":%4.1f,\"co2\":%4d,\"lux\":%u}", g_temperature, g_humidity, g_co2, g_lux);
         break;
     case 28:
-        sprintf(pubMessage, "{\"pressure\":%f,\"CO2\":%d,\"lux\":%u}", g_pressure, g_co2, g_lux);
+        sprintf(pubMessage, "{\"pressure\":%4.1f,\"co2\":%4d,\"lux\":%u}", g_pressure, g_co2, g_lux);
         break;
     case 29:
-        sprintf(pubMessage, "{\"temperature\":%f,\"pressure\":%f,\"CO2\":%d,\"lux\":%u}", g_temperature, g_pressure, g_co2, g_lux);
+        sprintf(pubMessage, "{\"temperature\":%4.1f,\"pressure\":%4.1f,\"co2\":%4d,\"lux\":%u}", g_temperature, g_pressure, g_co2, g_lux);
         break;
     case 30:
-        sprintf(pubMessage, "{\"humidity\":%f,\"pressure\":%f,\"CO2\":%d,\"lux\":%u}", g_humidity, g_pressure, g_co2, g_lux);
+        sprintf(pubMessage, "{\"humidity\":%4.1f,\"pressure\":%4.1f,\"co2\":%4d,\"lux\":%u}", g_humidity, g_pressure, g_co2, g_lux);
         break;
     case 31:
-        sprintf(pubMessage, "{\"temperature\":%f,\"humidity\":%f,\"pressure\":%f,\"CO2\":%d,\"lux\":%u}", g_temperature, g_humidity, g_pressure, g_co2, g_lux);
+        sprintf(pubMessage, "{\"temperature\":%4.1f,\"humidity\":%4.1f,\"pressure\":%4.1f,\"co2\":%4d,\"lux\":%u}", g_temperature, g_humidity, g_pressure, g_co2, g_lux);
         break;
     default:
         break;
@@ -526,6 +534,7 @@ void mqtt_main()
     mqtt_app_stop();
 
 }
+#endif // CONFIG_SOFTWARE_ESP_MQTT_SUPPORT
 
 ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////
@@ -535,11 +544,10 @@ void app_main(void)
     esp_log_level_set("*", ESP_LOG_ERROR);
     esp_log_level_set("MY-MAIN", ESP_LOG_INFO);
     esp_log_level_set("MY-WIFI", ESP_LOG_INFO);
+//    esp_log_level_set("MY-SCD30", ESP_LOG_INFO);
 
 #if CONFIG_SOFTWARE_INTERNAL_WIFI_SUPPORT
     wifi_initialise();
-
-//    sntp_main();
 #endif //CONFIG_SOFTWARE_INTERNAL_WIFI_SUPPORT
 
 #if CONFIG_SOFTWARE_SENSOR_USE_SENSOR
