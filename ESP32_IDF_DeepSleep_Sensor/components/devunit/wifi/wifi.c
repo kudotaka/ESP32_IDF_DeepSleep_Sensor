@@ -5,9 +5,11 @@
 #include "esp_system.h"
 #include "esp_event.h"
 #include "esp_log.h"
+#include "esp_netif.h"
 #include "nvs_flash.h"
 #include "lwip/err.h"
 #include "lwip/sys.h"
+#include "mysystem.h"
 
 #if CONFIG_SOFTWARE_INTERNAL_WIFI_SUPPORT
 #include "wifi.h"
@@ -87,12 +89,22 @@ static void event_handler(void* arg, esp_event_base_t event_base,
 
 void wifi_init_sta(void)
 {
+    esp_netif_t *netif = NULL;
     s_wifi_event_group = xEventGroupCreate();
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
-    esp_netif_create_default_wifi_sta();
+//    esp_netif_create_default_wifi_sta();
+    netif = esp_netif_create_default_wifi_sta();
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
+
+    char newHostname[20] = "";
+    createHostnameFromChipAndMacAddress(newHostname, sizeof(newHostname)/sizeof(char));
+    ESP_ERROR_CHECK(esp_netif_set_hostname(netif, newHostname));
+    const char* hostname;
+    ESP_ERROR_CHECK(esp_netif_get_hostname(netif, &hostname));
+    ESP_LOGI(TAG, "hostname: %s", hostname);
+
     esp_event_handler_instance_t instance_any_id;
     esp_event_handler_instance_t instance_got_ip;
     ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
