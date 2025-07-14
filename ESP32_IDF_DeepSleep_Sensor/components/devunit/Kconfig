@@ -6,6 +6,10 @@ menu "My DevBoard hardware config"
         bool "ESP MQTT"
         depends on SOFTWARE_INTERNAL_WIFI_SUPPORT
         default n
+    config SOFTWARE_ESP_HTTP_CLIENT_SUPPORT
+        bool "PUSHGATEWAY"
+        depends on SOFTWARE_INTERNAL_WIFI_SUPPORT
+        default n
     config SOFTWARE_INTERNAL_BUTTON_SUPPORT
         bool "BUTTON-Hardware [Internal]"
         default n
@@ -127,6 +131,19 @@ menu "My DevBoard software config"
         help
             This option enables wake up from GPIO. Be aware that if you use low level to trigger wakeup, we strongly
             recommend you to connect external pull-up resistance.
+
+    config PUSHGATEWAY_HTTP_HOST
+        string "PushGateway HOST"
+        default "pushgateway.internal"
+#    config PUSHGATEWAY_HTTP_URL
+#        string "PushGateway URL"
+#        default "http://XXX.XXX.XXX.XXX"
+    config PUSHGATEWAY_HTTP_PORT
+        int "PushGateway PORT"
+        default 9091
+    config PUSHGATEWAY_METRIC_URL
+        string "PushGateway Metric Url"
+        default "/metrics/job/env/instance/eps32"
 
     menu "GPIO wakeup configuration"
         visible if DEEP_SLEEP_GPIO_WAKEUP
